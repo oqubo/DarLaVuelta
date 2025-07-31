@@ -1,15 +1,22 @@
 using TMPro;
 using Unity.Mathematics.Geometry;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CajeroController : MonoBehaviour
 {
 
     [SerializeField] private int limiteMaximoPrecioPedido, incrementoLimiteMaximoPrecioPedido, despisteCliente, incrementoDespisteCliente, clientesSuperados;
 
-    [SerializeField] private int precioTotal, dineroRecibido, cambio, desfase;
+    [SerializeField] private int precioTotal, dineroRecibido, cambio, desfase, vidas;
     
-    [SerializeField] private TextMeshProUGUI precioTotalText, dineroRecibidoText, desfaseText, cambioText, clientesSuperadosText;
+    [SerializeField] private TextMeshProUGUI precioTotalText, dineroRecibidoText, cambioText, clientesSuperadosText;
+
+    [SerializeField] private Image barraVida;
+
+    [SerializeField] private GameObject canvasGameOver;
+    [SerializeField] private TextMeshProUGUI recordText;
     
     [SerializeField] private int cantidad1cts,
         cantidad2cts,
@@ -45,6 +52,7 @@ public class CajeroController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        vidas = 10;
         desfase = 0;
         despisteCliente = 0;
         limiteMaximoPrecioPedido = 10000;
@@ -143,12 +151,28 @@ public class CajeroController : MonoBehaviour
         clientesSuperados++;
         // valor absoluto de la diferencia entre dinero recibido y precio total
         desfase += Mathf.Abs(precioTotal + cambio - dineroRecibido);
+        if (desfase > 0) vidas--;
+        Debug.Log("vidas: " + vidas);
+        if (vidas <= 0) GameOver();
         ActualizarTextos();
         NuevoCliente();
     }
 
+    void GameOver()
+    {
+        canvasGameOver.SetActive(true);
+        recordText.text = clientesSuperados.ToString();
+    }
+    
+    public void ReiniciarJuego()
+    {
+        EditorSceneManager.LoadScene(EditorSceneManager.GetActiveScene().name);
+    }
+
     void ActualizarTextos()
     {
+        barraVida.fillAmount = (float)vidas / 10;
+        
         // formato euros , centimos con dos decimales
         
         clientesSuperadosText.text = clientesSuperados.ToString();
@@ -156,7 +180,6 @@ public class CajeroController : MonoBehaviour
         precioTotalText.text = (precioTotal/100).ToString() + "," + valorModulo(precioTotal) + " €";
         
         dineroRecibidoText.text = (dineroRecibido/100).ToString() + "," + valorModulo(dineroRecibido) + " €";
-        desfaseText.text = (desfase/100).ToString() + "," + valorModulo(desfase) + " €";
         cambioText.text = (cambio/100).ToString() + "," + valorModulo(cambio) + " €";
 
         cantidad1ctsText.text = cantidad1cts.ToString();
