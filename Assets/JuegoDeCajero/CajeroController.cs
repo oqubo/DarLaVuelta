@@ -1,6 +1,5 @@
 using TMPro;
-using Unity.Mathematics.Geometry;
-using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -166,7 +165,7 @@ public class CajeroController : MonoBehaviour
     
     public void ReiniciarJuego()
     {
-        EditorSceneManager.LoadScene(EditorSceneManager.GetActiveScene().name);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     void ActualizarTextos()
